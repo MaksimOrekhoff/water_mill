@@ -1,5 +1,5 @@
 <template>
-  <b-container style=" background: #2abd5b; text-align: center; justify-content: center;">
+  <b-container style=" background: #0de555; text-align: center; justify-content: center;">
     <b-row>
       <b-col style="padding: 5%;">
         <ul class="tools">
@@ -15,8 +15,17 @@
             <b-badge variant="primary">0</b-badge>
           </li>
         </ul>
-
-
+        <div>
+          <b-img src="/anim.gif"></b-img>
+        </div>
+        <div>
+          <h3>Water: 0</h3>
+          <b-progress :value="3" :max="10" variant="primary" animated></b-progress>
+          <h3>Energy: 0</h3>
+          <b-progress :value="4" :max="10" animated variant="warning"></b-progress>
+          <h3>Millet: 0</h3>
+          <b-progress :value="5" :max="10" animated variant="info"></b-progress>
+        </div>
       </b-col>
     </b-row>
   </b-container>
