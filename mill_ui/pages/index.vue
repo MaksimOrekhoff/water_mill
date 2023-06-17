@@ -1,30 +1,30 @@
 <template>
-  <b-container style=" background: #0de555; text-align: center; justify-content: center;">
+  <b-container style=" background: #2abd5b; text-align: center; justify-content: center;">
     <b-row>
       <b-col style="padding: 5%;">
         <ul class="tools">
-          <li class="water">
-            <b-badge variant="primary">0</b-badge>
+          <li class="water" @click="addWater">
+            <b-badge variant="primary">{{ state.water }}</b-badge>
           </li>
           <li class="txt">+</li>
-          <li class="millet">
-            <b-badge variant="warning">0</b-badge>
+          <li class="millet" @click="addMillet">
+            <b-badge variant="warning">{{ state.millet }}</b-badge>
           </li>
           <li class="txt">=</li>
-          <li class="flour">
-            <b-badge variant="primary">0</b-badge>
+          <li class="flour" @click="dropFlour">
+            <b-badge variant="primary">{{ state.flour }}</b-badge>
           </li>
         </ul>
         <div>
-          <b-img src="/anim.gif"></b-img>
+          <h3>Water: {{ state.water }}</h3>
+          <b-progress :value="state.water" :max="10" variant="primary" animated></b-progress>
+          <h3>Energy: {{ state.power }}</h3>
+          <b-progress :value="state.power" :max="10" animated variant="warning"></b-progress>
+          <h3>Millet: {{ state.millet }}</h3>
+          <b-progress :value="state.millet" :max="10" animated :variant="state.flour<10?'info':'danger'"></b-progress>
         </div>
         <div>
-          <h3>Water: 0</h3>
-          <b-progress :value="3" :max="10" variant="primary" animated></b-progress>
-          <h3>Energy: 0</h3>
-          <b-progress :value="4" :max="10" animated variant="warning"></b-progress>
-          <h3>Millet: 0</h3>
-          <b-progress :value="5" :max="10" animated variant="info"></b-progress>
+          <b-img :src="millImg()"></b-img>
         </div>
       </b-col>
     </b-row>
@@ -33,7 +33,51 @@
 
 <script>
 
+import {mapGetters, mapActions} from 'vuex'
 
+export default {
+  components: {},
+  computed: mapGetters({
+    state: "mill/getState"
+  }),
+  mounted() {
+    this.socket = new WebSocket("ws://localhost:8080/websocket")
+    this.socket.onopen = () => {
+      window.console.log("Socket opened")
+    }
+    this.socket.onmessage = (msg, ctx) => {
+      this.updateData(JSON.parse(msg.data))
+    }
+    setInterval(this.pushSocket, 5000)
+  },
+  fetch() {
+    this.$store.dispatch("mill/fetchData")
+  },
+  methods: {
+    pushSocket() {
+      this.socket.send(new Date());
+    },
+    updateData(data) {
+      this.$store.dispatch("mill/updateState", data)
+    },
+    addWater() {
+      this.$store.dispatch("mill/addWater", 10)
+    },
+    addMillet() {
+      this.$store.dispatch("mill/addMillet", 10)
+    },
+    dropFlour() {
+      this.$store.dispatch("mill/dropFlour")
+    },
+    millImg() {
+      if (this.state.engine) {
+        return "anim.gif"
+      } else {
+        return "stat.gif"
+      }
+    }
+  }
+}
 </script>
 
 <style>
@@ -67,5 +111,4 @@
 .tools li.flour {
   background: #fff url(/flour_PNG20.png) no-repeat center center/cover;
 }
-
 </style>

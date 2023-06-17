@@ -4,7 +4,7 @@ import com.orekhov.mill.bean.MillState;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mill")
+@RequestMapping("/rest/mill")
 public class MillController {
 
     private final MillService millService;
